@@ -2,6 +2,7 @@
  * API client for PDFSmart Assistant backend
  */
 import axios from 'axios'
+import type { DocumentAnalysis, FormField } from '@/types'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
@@ -21,21 +22,8 @@ export interface DocumentUploadResponse {
   expires_at: string
 }
 
-export interface FormField {
-  field_name: string
-  field_type: string
-  coordinates: { x: number; y: number; width: number; height: number }
-  page_number: number
-  current_value?: string
-}
-
-export interface FormAnalysisResponse {
-  document_id: string
-  total_pages: number
-  detected_fields: FormField[]
-  is_scanned: boolean
-  ocr_engine_used?: string
-}
+export type FormAnalysisResponse = DocumentAnalysis
+export type { FormField }
 
 export interface FillFormResponse {
   document_id: string
