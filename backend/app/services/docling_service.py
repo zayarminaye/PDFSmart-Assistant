@@ -6,7 +6,8 @@ from typing import List, Dict, Any, Optional
 from pathlib import Path
 import logging
 
-from docling.document_converter import DocumentConverter
+# Docling disabled for free tier (too memory intensive)
+# from docling.document_converter import DocumentConverter
 
 logger = logging.getLogger(__name__)
 
@@ -19,14 +20,14 @@ class DoclingService:
 
     def __init__(self):
         """Initialize Docling converter with optimal settings."""
-        # Initialize converter with default options
-        # Docling 2.61.1+ has good defaults built-in
-        self.converter = DocumentConverter()
-        logger.info("Docling service initialized")
+        # Skip Docling initialization for free tier (too memory intensive)
+        # Use lightweight PyPDF2 fallback instead
+        self.converter = None
+        logger.info("Docling service created (using lightweight mode for free tier)")
 
     async def analyze_document(self, pdf_path: str) -> Dict[str, Any]:
         """
-        Analyze PDF document structure.
+        Analyze PDF document structure using lightweight PyPDF2.
 
         Args:
             pdf_path: Path to PDF file
@@ -35,67 +36,25 @@ class DoclingService:
             Document structure analysis including pages, tables, forms
         """
         try:
-            # Convert document
-            result = self.converter.convert(pdf_path)
+            # Use lightweight PyPDF2 instead of heavy Docling for free tier
+            import PyPDF2
 
-            # Extract document structure
+            with open(pdf_path, 'rb') as file:
+                reader = PyPDF2.PdfReader(file)
+                num_pages = len(reader.pages)
+
+            # Lightweight analysis using PyPDF2
             analysis = {
-                "total_pages": len(result.document.pages),
+                "total_pages": num_pages,
                 "pages": [],
                 "tables": [],
                 "form_fields": [],
                 "text_blocks": [],
                 "images": [],
-                "metadata": {}
+                "metadata": reader.metadata or {}
             }
 
-            # Process each page
-            for page_idx, page in enumerate(result.document.pages):
-                page_info = {
-                    "page_number": page_idx + 1,
-                    "width": page.size.width if hasattr(page, 'size') else 0,
-                    "height": page.size.height if hasattr(page, 'size') else 0,
-                    "elements": []
-                }
-
-                # Extract page elements
-                if hasattr(page, 'elements'):
-                    for element in page.elements:
-                        element_info = {
-                            "type": element.__class__.__name__,
-                            "bbox": self._extract_bbox(element),
-                            "content": self._extract_content(element)
-                        }
-                        page_info["elements"].append(element_info)
-
-                        # Categorize elements
-                        if "Table" in element.__class__.__name__:
-                            analysis["tables"].append({
-                                "page": page_idx + 1,
-                                "bbox": element_info["bbox"],
-                                "content": element_info["content"]
-                            })
-                        elif "Text" in element.__class__.__name__:
-                            analysis["text_blocks"].append({
-                                "page": page_idx + 1,
-                                "bbox": element_info["bbox"],
-                                "text": element_info["content"]
-                            })
-
-                analysis["pages"].append(page_info)
-
-            # Extract metadata
-            if hasattr(result.document, 'metadata'):
-                analysis["metadata"] = {
-                    "title": getattr(result.document.metadata, 'title', ''),
-                    "author": getattr(result.document.metadata, 'author', ''),
-                    "creation_date": getattr(result.document.metadata, 'creation_date', ''),
-                    "modification_date": getattr(result.document.metadata, 'modification_date', '')
-                }
-
-            logger.info(f"Document analysis complete: {analysis['total_pages']} pages, "
-                       f"{len(analysis['tables'])} tables, {len(analysis['text_blocks'])} text blocks")
-
+            logger.info(f"Lightweight document analysis complete: {num_pages} pages")
             return analysis
 
         except Exception as e:
@@ -164,7 +123,7 @@ class DoclingService:
 
     async def export_to_markdown(self, pdf_path: str) -> str:
         """
-        Convert PDF to Markdown format.
+        Convert PDF to Markdown format using lightweight extraction.
 
         Args:
             pdf_path: Path to PDF file
@@ -173,12 +132,16 @@ class DoclingService:
             Markdown representation of the document
         """
         try:
-            result = self.converter.convert(pdf_path)
+            import PyPDF2
 
-            # Export to markdown
-            markdown_content = result.document.export_to_markdown()
+            markdown_content = ""
+            with open(pdf_path, 'rb') as file:
+                reader = PyPDF2.PdfReader(file)
+                for page_num, page in enumerate(reader.pages):
+                    text = page.extract_text()
+                    markdown_content += f"# Page {page_num + 1}\n\n{text}\n\n"
 
-            logger.info("Document exported to Markdown")
+            logger.info("Document exported to Markdown (lightweight mode)")
             return markdown_content
 
         except Exception as e:
