@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: pdfsmart-backend
+    env: python
+    rootDir: backend
+    buildCommand: apt-get update && apt-get install -y tesseract-ocr tesseract-ocr-eng poppler-utils && pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.7
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: BACKEND_CORS_ORIGINS
+        value: http://localhost:3000
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: False
