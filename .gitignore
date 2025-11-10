@@ -1,0 +1,99 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+# Python libs (but not frontend/src/lib)
+backend/lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv
+
+# Environment Variables - IMPORTANT: Never commit these!
+.env
+.env.local
+.env.*.local
+*.env
+
+# Credentials and Secrets - NEVER COMMIT THESE!
+*credentials*.json
+*secrets*.json
+*firebase*.json
+*.pem
+*.key
+*.cert
+
+# API Keys
+*api_key*
+*API_KEY*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads and Temporary Files
+uploads/
+temp/
+tmp/
+*.tmp
+
+# Node.js / Frontend
+node_modules/
+.next/
+out/
+.cache/
+.turbo/
+.vercel
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Editor backup files
+*~
+*.bak
+*.swp
+*.swo
+
+# Local development
+.local/

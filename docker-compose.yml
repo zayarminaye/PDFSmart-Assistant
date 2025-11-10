@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=PDFSmart Assistant
+      - ENVIRONMENT=development
+      - DEBUG=True
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-in-production}
+    volumes:
+      - ./backend:/app
+      - pdf_uploads:/app/uploads
+    depends_on:
+      - redis
+    networks:
+      - pdfsmart-network
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    networks:
+      - pdfsmart-network
+
+  # Redis (for task queue - optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - pdfsmart-network
+    volumes:
+      - redis_data:/data
+
+volumes:
+  pdf_uploads:
+  redis_data:
+
+networks:
+  pdfsmart-network:
+    driver: bridge
