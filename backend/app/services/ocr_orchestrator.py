@@ -328,10 +328,22 @@ class OCROrchestrator:
         """Extract text using Google Vision API."""
         try:
             from google.cloud import vision
+            from google.oauth2 import service_account
             import io
+            import json
+            import os
 
-            # Initialize Vision API client
-            client = vision.ImageAnnotatorClient()
+            # Initialize Vision API client with credentials from environment
+            credentials_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
+
+            if credentials_json:
+                # Parse JSON credentials from environment variable
+                credentials_dict = json.loads(credentials_json)
+                credentials = service_account.Credentials.from_service_account_info(credentials_dict)
+                client = vision.ImageAnnotatorClient(credentials=credentials)
+            else:
+                # Fall back to default credentials (for local development with gcloud auth)
+                client = vision.ImageAnnotatorClient()
 
             # Convert PIL Image to bytes
             img_byte_arr = io.BytesIO()
