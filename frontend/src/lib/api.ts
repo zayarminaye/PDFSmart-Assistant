@@ -62,11 +62,13 @@ export const analyzePDF = async (documentId: string): Promise<FormAnalysisRespon
 
 export const fillForm = async (
   documentId: string,
-  instructions: string
+  instructions: string,
+  ocrEngine?: string
 ): Promise<FillFormResponse> => {
   const response = await api.post('/api/form/fill', {
     document_id: documentId,
     instructions,
+    ocr_engine: ocrEngine,
   })
   return response.data
 }
@@ -75,13 +77,15 @@ export const extractContent = async (
   documentId: string,
   extractionQuery: string,
   outputFormat: string = 'text',
-  pages?: number[]
+  pages?: number[],
+  ocrEngine?: string
 ): Promise<ExtractionResponse> => {
   const response = await api.post('/api/extract/extract', {
     document_id: documentId,
     extraction_query: extractionQuery,
     output_format: outputFormat,
     pages,
+    ocr_engine: ocrEngine,
   })
   return response.data
 }

@@ -40,6 +40,8 @@ export interface ProcessingState {
 
 export type OutputFormat = 'text' | 'markdown' | 'csv' | 'excel' | 'json'
 
+export type OCREngine = 'tesseract' | 'google_vision'
+
 export interface ExtractionResult {
   documentId: string
   extractedContent: any
