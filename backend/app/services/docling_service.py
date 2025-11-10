@@ -7,8 +7,6 @@ from pathlib import Path
 import logging
 
 from docling.document_converter import DocumentConverter
-from docling.datamodel.base_models import InputFormat
-from docling.datamodel.pipeline_options import PdfPipelineOptions
 
 logger = logging.getLogger(__name__)
 
@@ -21,18 +19,9 @@ class DoclingService:
 
     def __init__(self):
         """Initialize Docling converter with optimal settings."""
-        # Configure pipeline options
-        pipeline_options = PdfPipelineOptions()
-        pipeline_options.do_ocr = False  # OCR handled by our orchestrator
-        pipeline_options.do_table_structure = True
-        pipeline_options.table_structure_options.do_cell_matching = True
-
-        # Initialize converter
-        self.converter = DocumentConverter(
-            format_options={
-                InputFormat.PDF: pipeline_options,
-            }
-        )
+        # Initialize converter with default options
+        # Docling 2.61.1+ has good defaults built-in
+        self.converter = DocumentConverter()
         logger.info("Docling service initialized")
 
     async def analyze_document(self, pdf_path: str) -> Dict[str, Any]:
