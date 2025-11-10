@@ -43,7 +43,8 @@ async def extract_content(request: ExtractionRequest) -> ExtractionResponse:
             request.extraction_query,
             request.output_format,
             UserTier.FREE,
-            request.pages
+            request.pages,
+            ocr_engine=request.ocr_engine.value if request.ocr_engine else None
         )
 
         if not result.get("success"):

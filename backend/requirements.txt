@@ -11,6 +11,7 @@ pypdf>=4.0.0
 
 # OCR Engines - Lightweight only for free tier (512MB RAM limit)
 pytesseract>=0.3.10
+google-cloud-vision>=3.7.0  # Cloud-based OCR (no local memory usage)
 # easyocr>=1.7.0  # Commented out - uses ~1GB RAM
 # paddleocr>=2.7.0  # Commented out - uses ~800MB RAM
 # rapidocr-onnxruntime>=1.3.0  # Commented out - uses ~500MB RAM

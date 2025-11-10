@@ -64,6 +64,7 @@ class FillFormRequest(BaseModel):
     document_id: str
     instructions: str  # Natural language instructions
     field_mappings: Optional[Dict[str, str]] = None  # Manual field mappings
+    ocr_engine: Optional[OCREngine] = OCREngine.TESSERACT  # OCR engine to use
 
 
 class FillFormResponse(BaseModel):
@@ -81,6 +82,7 @@ class ExtractionRequest(BaseModel):
     extraction_query: str  # Natural language query
     output_format: OutputFormat = OutputFormat.TEXT
     pages: Optional[List[int]] = None  # Specific pages to extract from
+    ocr_engine: Optional[OCREngine] = OCREngine.TESSERACT  # OCR engine to use
 
 
 class ExtractionResponse(BaseModel):

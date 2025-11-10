@@ -94,7 +94,8 @@ class PDFProcessor:
         self,
         pdf_path: str,
         instructions: str,
-        user_tier: UserTier = UserTier.FREE
+        user_tier: UserTier = UserTier.FREE,
+        ocr_engine: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Fill PDF form based on natural language instructions.
@@ -103,6 +104,7 @@ class PDFProcessor:
             pdf_path: Path to PDF file
             instructions: Natural language filling instructions
             user_tier: User's subscription tier
+            ocr_engine: OCR engine to use (tesseract or google_vision)
 
         Returns:
             Result with filled PDF and metadata
@@ -164,7 +166,8 @@ class PDFProcessor:
         extraction_query: str,
         output_format: OutputFormat = OutputFormat.TEXT,
         user_tier: UserTier = UserTier.FREE,
-        pages: Optional[List[int]] = None
+        pages: Optional[List[int]] = None,
+        ocr_engine: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Extract content from PDF based on natural language query.
@@ -175,6 +178,7 @@ class PDFProcessor:
             output_format: Desired output format
             user_tier: User's subscription tier
             pages: Specific pages to extract from
+            ocr_engine: OCR engine to use (tesseract or google_vision)
 
         Returns:
             Extracted content in requested format

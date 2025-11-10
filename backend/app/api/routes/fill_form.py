@@ -40,7 +40,8 @@ async def fill_form(request: FillFormRequest) -> FillFormResponse:
         result = await pdf_processor.fill_form(
             str(file_path),
             request.instructions,
-            UserTier.FREE
+            UserTier.FREE,
+            ocr_engine=request.ocr_engine.value if request.ocr_engine else None
         )
 
         if not result.get("success"):

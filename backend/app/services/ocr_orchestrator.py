@@ -326,10 +326,77 @@ class OCROrchestrator:
 
     async def _google_vision_extract(self, image: Image.Image) -> Dict[str, Any]:
         """Extract text using Google Vision API."""
-        # This is a placeholder for Google Vision API integration
-        # Requires google-cloud-vision library and proper authentication
-        logger.warning("Google Vision API not yet implemented")
-        raise NotImplementedError("Google Vision API integration pending")
+        try:
+            from google.cloud import vision
+            import io
+
+            # Initialize Vision API client
+            client = vision.ImageAnnotatorClient()
+
+            # Convert PIL Image to bytes
+            img_byte_arr = io.BytesIO()
+            image.save(img_byte_arr, format='PNG')
+            img_byte_arr = img_byte_arr.getvalue()
+
+            # Create vision image
+            vision_image = vision.Image(content=img_byte_arr)
+
+            # Perform text detection
+            response = client.text_detection(image=vision_image)
+            annotations = response.text_annotations
+
+            if response.error.message:
+                raise Exception(f"Google Vision API error: {response.error.message}")
+
+            if not annotations:
+                return {
+                    "engine_used": OCREngine.GOOGLE_VISION,
+                    "text": "",
+                    "confidence": 0.0,
+                    "words": []
+                }
+
+            # First annotation contains full text
+            full_text = annotations[0].description
+
+            # Remaining annotations are individual words/blocks
+            words = []
+            confidences = []
+
+            for annotation in annotations[1:]:  # Skip first (full text)
+                vertices = annotation.bounding_poly.vertices
+                bbox = {
+                    'x': vertices[0].x,
+                    'y': vertices[0].y,
+                    'width': vertices[2].x - vertices[0].x,
+                    'height': vertices[2].y - vertices[0].y
+                }
+
+                # Google Vision doesn't provide confidence per word, use 95% as default
+                confidence = 0.95
+
+                words.append({
+                    'text': annotation.description,
+                    'confidence': confidence,
+                    'bbox': bbox
+                })
+                confidences.append(confidence)
+
+            avg_confidence = sum(confidences) / len(confidences) if confidences else 0.95
+
+            return {
+                "engine_used": OCREngine.GOOGLE_VISION,
+                "text": full_text,
+                "confidence": avg_confidence,
+                "words": words
+            }
+
+        except ImportError:
+            logger.error("google-cloud-vision not installed")
+            raise Exception("Google Cloud Vision library not installed")
+        except Exception as e:
+            logger.error(f"Google Vision extraction failed: {e}")
+            raise
 
 
 # Singleton instance
