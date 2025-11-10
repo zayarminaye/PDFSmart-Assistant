@@ -127,8 +127,8 @@ export default function FillFormTab() {
               <div>
                 <p className="text-sm font-medium text-green-900">{document.filename}</p>
                 <p className="text-xs text-green-700">
-                  {analysis.totalPages} pages • {analysis.detectedFields.length} fields detected
-                  {analysis.isScanned && ' • Scanned document'}
+                  {analysis.total_pages} pages • {analysis.detected_fields.length} fields detected
+                  {analysis.is_scanned && ' • Scanned document'}
                 </p>
               </div>
             </div>
@@ -137,20 +137,20 @@ export default function FillFormTab() {
       </div>
 
       {/* Form Fields Info */}
-      {analysis && analysis.detectedFields.length > 0 && (
+      {analysis && analysis.detected_fields.length > 0 && (
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-3">Detected Form Fields</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {analysis.detectedFields.slice(0, 10).map((field, idx) => (
+            {analysis.detected_fields.slice(0, 10).map((field, idx) => (
               <div key={idx} className="text-sm p-2 bg-gray-50 rounded">
-                <span className="font-medium">{field.fieldName || `Field ${idx + 1}`}</span>
-                <span className="text-gray-500 ml-2">({field.fieldType})</span>
+                <span className="font-medium">{field.field_name || `Field ${idx + 1}`}</span>
+                <span className="text-gray-500 ml-2">({field.field_type})</span>
               </div>
             ))}
           </div>
-          {analysis.detectedFields.length > 10 && (
+          {analysis.detected_fields.length > 10 && (
             <p className="mt-2 text-xs text-gray-500">
-              ...and {analysis.detectedFields.length - 10} more fields
+              ...and {analysis.detected_fields.length - 10} more fields
             </p>
           )}
         </div>

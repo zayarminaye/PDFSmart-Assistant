@@ -11,24 +11,24 @@ export interface UploadedDocument {
 }
 
 export interface FormField {
-  fieldName: string
-  fieldType: 'text' | 'checkbox' | 'radio' | 'signature' | 'date'
+  field_name: string
+  field_type: 'text' | 'checkbox' | 'radio' | 'signature' | 'date'
   coordinates: {
     x: number
     y: number
     width: number
     height: number
   }
-  pageNumber: number
-  currentValue?: string
+  page_number: number
+  current_value?: string
 }
 
 export interface DocumentAnalysis {
-  documentId: string
-  totalPages: number
-  detectedFields: FormField[]
-  isScanned: boolean
-  ocrEngineUsed?: string
+  document_id: string
+  total_pages: number
+  detected_fields: FormField[]
+  is_scanned: boolean
+  ocr_engine_used?: string
 }
 
 export interface ProcessingState {
