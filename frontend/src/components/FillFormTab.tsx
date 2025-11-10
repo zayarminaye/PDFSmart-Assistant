@@ -5,12 +5,13 @@ import { useDropzone } from 'react-dropzone'
 import { toast } from 'react-hot-toast'
 import { uploadPDF, analyzePDF, fillForm } from '@/lib/api'
 import { DocumentIcon, CloudArrowUpIcon, SparklesIcon } from '@heroicons/react/24/outline'
-import type { DocumentAnalysis, ProcessingState } from '@/types'
+import type { DocumentAnalysis, ProcessingState, OCREngine } from '@/types'
 
 export default function FillFormTab() {
   const [document, setDocument] = useState<{ id: string; filename: string } | null>(null)
   const [analysis, setAnalysis] = useState<DocumentAnalysis | null>(null)
   const [instructions, setInstructions] = useState('')
+  const [ocrEngine, setOcrEngine] = useState<OCREngine>('tesseract')
   const [result, setResult] = useState<any>(null)
   const [state, setState] = useState<ProcessingState>({
     isUploading: false,
@@ -73,7 +74,7 @@ export default function FillFormTab() {
     setState(prev => ({ ...prev, isProcessing: true, error: null }))
 
     try {
-      const fillResult = await fillForm(document.id, instructions)
+      const fillResult = await fillForm(document.id, instructions, ocrEngine)
       setResult(fillResult)
       toast.success(`Filled ${fillResult.fields_filled}/${fillResult.fields_total} fields!`)
       setState(prev => ({ ...prev, isProcessing: false }))
@@ -172,6 +173,23 @@ export default function FillFormTab() {
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             rows={4}
           />
+
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              OCR Engine
+            </label>
+            <select
+              value={ocrEngine}
+              onChange={(e) => setOcrEngine(e.target.value as OCREngine)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="tesseract">Tesseract (Free, Fast)</option>
+              <option value="google_vision">Google Vision (Best Quality, 1000 free/month)</option>
+            </select>
+            <p className="mt-1 text-xs text-gray-500">
+              Choose OCR engine for scanned documents
+            </p>
+          </div>
 
           <button
             onClick={handleFillForm}

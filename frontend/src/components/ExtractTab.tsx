@@ -5,12 +5,13 @@ import { useDropzone } from 'react-dropzone'
 import { toast } from 'react-hot-toast'
 import { uploadPDF, extractContent, extractTables, extractText } from '@/lib/api'
 import { DocumentIcon, CloudArrowUpIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
-import type { ProcessingState, OutputFormat } from '@/types'
+import type { ProcessingState, OutputFormat, OCREngine } from '@/types'
 
 export default function ExtractTab() {
   const [document, setDocument] = useState<{ id: string; filename: string } | null>(null)
   const [query, setQuery] = useState('')
   const [outputFormat, setOutputFormat] = useState<OutputFormat>('text')
+  const [ocrEngine, setOcrEngine] = useState<OCREngine>('tesseract')
   const [result, setResult] = useState<any>(null)
   const [state, setState] = useState<ProcessingState>({
     isUploading: false,
@@ -60,7 +61,7 @@ export default function ExtractTab() {
     setState(prev => ({ ...prev, isProcessing: true, error: null }))
 
     try {
-      const extractResult = await extractContent(document.id, query, outputFormat)
+      const extractResult = await extractContent(document.id, query, outputFormat, undefined, ocrEngine)
       setResult(extractResult)
       toast.success('Content extracted successfully!')
       setState(prev => ({ ...prev, isProcessing: false }))
@@ -192,6 +193,23 @@ export default function ExtractTab() {
               <option value="json">JSON</option>
               <option value="csv">CSV</option>
             </select>
+          </div>
+
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              OCR Engine
+            </label>
+            <select
+              value={ocrEngine}
+              onChange={(e) => setOcrEngine(e.target.value as OCREngine)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="tesseract">Tesseract (Free, Fast)</option>
+              <option value="google_vision">Google Vision (Best Quality, 1000 free/month)</option>
+            </select>
+            <p className="mt-1 text-xs text-gray-500">
+              Choose OCR engine for scanned documents
+            </p>
           </div>
 
           <button
