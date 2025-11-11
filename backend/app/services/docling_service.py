@@ -42,6 +42,7 @@ class DoclingService:
             with open(pdf_path, 'rb') as file:
                 reader = PyPDF2.PdfReader(file)
                 num_pages = len(reader.pages)
+                metadata = reader.metadata or {}
 
             # Lightweight analysis using PyPDF2
             analysis = {
@@ -51,7 +52,7 @@ class DoclingService:
                 "form_fields": [],
                 "text_blocks": [],
                 "images": [],
-                "metadata": reader.metadata or {}
+                "metadata": metadata
             }
 
             logger.info(f"Lightweight document analysis complete: {num_pages} pages")
